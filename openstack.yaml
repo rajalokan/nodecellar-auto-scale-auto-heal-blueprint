@@ -5,9 +5,11 @@ description: >
 
 imports:
   - http://www.getcloudify.org/spec/cloudify/4.3/types.yaml
+
   - plugin:cloudify-openstack-plugin
   - plugin:cloudify-utilities-plugin
   - plugin:cloudify-diamond-plugin
+
   - types/nodecellar.yaml
   - types/openstack-types.yaml
   - types/haproxy/haproxy.yaml
@@ -75,6 +77,8 @@ node_templates:
           ssh-authorized-keys:
           - { get_input: agent_key_public }
 
+  # ----------------------------------------------------------------------------
+
   nodecellar:
     type: nodecellar.nodes.NodecellarApplicationModule
     relationships:
@@ -84,6 +88,8 @@ node_templates:
         target: nodejs
       - type: app_connected_to_haproxy
         target: haproxy
+
+  # ----------------------------------------------------------------------------
 
   mongod:
     type: nodecellar.nodes.MonitoredMongoDatabase
@@ -104,6 +110,8 @@ node_templates:
     relationships:
       - target: haproxy_frontend_host
         type: cloudify.relationships.contained_in
+
+  # ----------------------------------------------------------------------------
 
   mongod_host:
     type: nodecellar.nodes.MonitoredServer
@@ -138,6 +146,8 @@ node_templates:
         type: cloudify.openstack.server_connected_to_port
       - type: cloudify.relationships.depends_on
         target: cloudify_host_cloud_config
+
+  # ----------------------------------------------------------------------------
 
   mongodb_host_port:
     type: cloudify.openstack.nodes.Port
@@ -176,6 +186,8 @@ node_templates:
         target: haproxy_frontend_security_group
       - type: cloudify.openstack.port_connected_to_floating_ip
         target: nodecellar_ip
+
+  # ----------------------------------------------------------------------------
 
   mongod_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -216,6 +228,8 @@ node_templates:
           port: { get_property: [ haproxy, frontend_port ] }
         - remote_ip_prefix: 0.0.0.0/0
           port: { get_property: [ haproxy, statistics_port ]}
+
+  # ----------------------------------------------------------------------------
 
   nodecellar_ip:
     type: cloudify.openstack.nodes.FloatingIP
